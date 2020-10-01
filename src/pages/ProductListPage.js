@@ -1,37 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { fetchProductsAPI, deleteProductAPI } from '../actions';
 import ProductItem from '../components/ProductItem/ProductItem';
 import ProductList from '../components/ProductList/ProductList';
-import callAPI from '../utils/api';
+
 function ProductListPage(props) {
   
-  const [products,setProducts] = useState([])
+  const products = useSelector(state => state.products)
+  const dispatch = useDispatch();
   
   useEffect(() => {
-    callAPI('GET','products',null).then(res => {
-      setProducts(res.data)
-    })
+    dispatch(fetchProductsAPI());
   },[])
   
   const onDelete = (id) => {
-    callAPI('DELETE', `products/${id}`,null).then(res => {
-      if(res.status === 200) {
-        var index = findIndex(products, id);
-         if(index !== -1){
-           products.splice(index,1);
-           setProducts([...products])
-         }
-      }
-    })
-  }
-  const findIndex = (products,id) => {
-    var result = -1; 
-    products.forEach((product, index) => {
-      if(product.id === id){
-        result = index
-      }
-    });
-    return result;
+    dispatch(deleteProductAPI(id))
   }
 
   return (

@@ -1,21 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import callAPI from '../utils/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { addProductAPI, getProductAPI } from '../actions';
 
-function ProductActionPage({history, match}) {
+function ProductActionPage({history, match,}) {
   const [value, setValue] = useState({
     id: '',
     name: '',
     description: '',
     price: '',
     status: ''
-  })
+  });
+  const product = useSelector( state => state.product );
+  const dispatch = useDispatch();
+  console.log(product);
+  
   useEffect(() => {
     if(match) {
         const id = match.params.id;
-        callAPI('GET',`/products/${id}`,null).then(res => {
-            setValue(res.data)
-        })
+        dispatch(getProductAPI(id));
     }
   },[])
 
@@ -33,10 +37,9 @@ function ProductActionPage({history, match}) {
                 history.goBack();
             })
         }else{
-            callAPI('POST', 'products', value).then(res => {
-                history.goBack();
-            })
+            dispatch(addProductAPI(value))
         }
+        history.goBack();
     }
 
   return (
